@@ -1,38 +1,68 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+import API_ENDPOINTS from "@/constant/api_endpoint";
+import useFetch from "./useFetch";
 import { UrlType } from "@/types/utils/url_type";
-import { useState } from "react";
+import { SWRResponse } from "swr";
+import { SWRMutationResponse } from "swr/mutation";
 import { useCopyToClipboard, useLocalStorage } from "usehooks-ts";
 
 const useUrlShortener = () => {
-  const [url, setUrl] = useState<UrlType | null>(null);
   const [urlStore, setUrlStore] = useLocalStorage<UrlType[]>("urls", []);
   const [copiedText, copy] = useCopyToClipboard();
 
-  const isUrlHasSaved = (localUrl: string): boolean => {
-    return !!urlStore.find((u: UrlType) => u.original === localUrl);
+  const isUrlHasSaved = (localUrl: string | undefined): UrlType | undefined => {
+    return urlStore.find((u: UrlType) => u.original_url === localUrl);
   };
 
-  const saveUrl = (u: UrlType) => {
-    if (!isUrlHasSaved(u.original)) {
-      setUrlStore((prev: UrlType[]) => [...prev, u]);
-    }
-    setUrl(u);
+  const deleteUrl = (localUrl: UrlType) => {
+    setUrlStore((prev) => [
+      ...prev.filter((url) => url.original_url !== localUrl.original_url),
+    ]);
+  };
+
+  const overwriteUrl = (localUrl: UrlType) => {
+    setUrlStore((prev) => [
+      ...prev.map((url) => {
+        if (localUrl.original_url === url.original_url) {
+          url = localUrl;
+        }
+        return {
+          ...url,
+        };
+      }),
+    ]);
+  };
+
+  const saveUrl = () => {
+    return useFetch(API_ENDPOINTS.URL.SHORTEN, {
+      isMutation: true,
+      method: "POST",
+    }) as SWRMutationResponse;
   };
 
   const copyUrl = (u: UrlType) => {
-    copy(u?.shorten as string);
+    copy(u?.full_url as string);
     setTimeout(() => {
       copy("");
     }, 3000);
   };
 
+  const getUrl = (payload?: Record<string, unknown>) => {
+    return useFetch(API_ENDPOINTS.URL.SHORTEN, {
+      params: payload,
+    }) as SWRResponse;
+  };
+
   return {
-    url,
     urlStore,
     copiedText,
-    setUrl,
     setUrlStore,
     saveUrl,
     copyUrl,
+    getUrl,
+    isUrlHasSaved,
+    deleteUrl,
+    overwriteUrl,
   };
 };
 

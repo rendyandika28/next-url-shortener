@@ -18,17 +18,15 @@ const useToaster = create<TypeUseToaster>((set, get) => {
   const isShowing: boolean = !!toaster;
 
   const show = (text: string, options?: ToasterOptions): void => {
-    if (!get().toaster) {
-      set(() => ({
-        toaster: {
-          text,
-          ...options,
-        },
-      }));
-      setTimeout(() => {
-        set(() => ({ toaster: null }));
-      }, options?.timeout || 3000);
-    }
+    set(() => ({
+      toaster: {
+        text,
+        ...options,
+      },
+    }));
+    setTimeout(() => {
+      set(() => ({ toaster: null }));
+    }, options?.timeout || 2000);
   };
 
   return {

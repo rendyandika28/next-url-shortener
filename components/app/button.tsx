@@ -10,7 +10,7 @@ const AppButton: React.FC<TypeButton> = ({ loading = false, text = '', variant =
   const customClass = ['btn', variant, color, className].join(' ')
 
   return (
-    <button type="button" className={customClass} {...props}>
+    <button disabled={loading} type="button" className={`${customClass} disabled:bg-neutral-800 disabled:text-gray-300`} {...props}>
       {loading && <span className={`loading loading-spinner ${icon && 'size-3'}`}></span>}
       {!loading && icon}
       {text}

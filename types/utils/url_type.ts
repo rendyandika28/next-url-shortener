@@ -1,4 +1,5 @@
 export interface UrlType {
-  original: string;
-  shorten: string;
+  original_url: string;
+  shorten_url?: string | undefined;
+  full_url?: string;
 }

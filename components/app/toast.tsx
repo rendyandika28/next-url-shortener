@@ -20,14 +20,15 @@ const ToastIcon = ({ type }: { type?: 'success' | 'error' | 'warning' }) => {
 
 const AppToast = () => {
   const toaster = useToaster<Toaster | null>((state) => state.toaster)
-  const toastType = `alert-${toaster?.type || 'success'}`
+  let toastType = toaster?.type === 'error' ? 'alert-error' : toaster?.type === 'warning' ? 'alert-warning' : 'alert-success'
+
   return (
     <>
       {toaster && toastType &&
-        <div className="toast toast-top toast-center">
-          <div role="alert" className={`alert ${toastType} gap-2 text-white text-sm p-3`}>
-            <ToastIcon type={toaster.type} />
-            <span>{toaster.text}</span>
+        <div key={toaster.text} className="toast toast-top toast-center">
+          <div role="alert" className={`alert ${toastType} gap-2 text-white font-medium text-sm p-3`}>
+            <ToastIcon type={toaster?.type} />
+            <span>{toaster?.text}</span>
           </div>
         </div>
       }

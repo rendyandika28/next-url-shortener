@@ -1,0 +1,36 @@
+import ShortenerFormSchema from "@/formschemas/application/shortener_formschemas";
+import { supabase } from "@/lib/initSupabase";
+import { generateRandomSlug } from "@/lib/utils";
+import { generateResponseApi, generateResponseError } from "@/lib/web";
+import { validateHeader } from "@/lib/web/helper";
+import { UrlType } from "@/types/utils/url_type";
+import { PostgrestError } from "@supabase/supabase-js";
+
+export async function POST(req: Request) {
+  try {
+    validateHeader(req);
+    const data: UrlType = await ShortenerFormSchema.validate(await req.json());
+
+    console.log({ data });
+
+    if (!data.shorten_url) {
+      data.shorten_url = generateRandomSlug(Math.floor(Math.random() * 15) + 1);
+    }
+
+    const response = await supabase
+      .from("link_shorteners")
+      .insert(data)
+      .select("original_url, shorten_url")
+      .single();
+
+    if (response.error) {
+      throw response.error;
+    }
+
+    return generateResponseApi<UrlType>(response);
+  } catch (error) {
+    return generateResponseError({
+      ...(error as PostgrestError),
+    });
+  }
+}
