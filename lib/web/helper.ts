@@ -39,6 +39,14 @@ export const generateErrorData = (error: PostgrestError): ErrorDataType => {
     };
   }
 
+  // row not found
+  if (error.code === "PGRST116") {
+    return {
+      code: 404,
+      message: "Data not found",
+    };
+  }
+
   // duplicate values
   if (error.code === "23505") {
     const { key, value } = constructKeyValueResp(error.details);

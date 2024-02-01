@@ -49,24 +49,24 @@ export function useFetch(url: string, opts?: FetchOptsType) {
   const defaults = {
     onError(error: AxiosError) {
       const excludedInterceptor = (statusCode: number): boolean => {
+        console.log({ statusCode, opts: opts?.excludeInterceptor });
         if (!opts?.excludeInterceptor) return false;
         return opts?.excludeInterceptor.includes(statusCode);
       };
 
+      const errorMessage = (error?.response?.data as { message?: string })
+        ?.message;
       if (!excludedInterceptor(error?.response?.status as number)) {
         if (error?.status === 401) {
           if (typeof window !== "undefined") window.location.reload();
         }
+        toaster.show(errorMessage as string, { type: "error" });
       }
-
-      const errorMessage = (error?.response?.data as { message?: string })
-        ?.message;
-      toaster.show(errorMessage as string, { type: "error" });
     },
     revalidateOnFocus: false,
   };
 
-  if (typeof opts?.watch === "undefined") opts!.watch = true;
+  if (opts && typeof opts?.watch === "undefined") opts!.watch = true;
 
   let key = [url];
   if (typeof opts?.watch === "object") {

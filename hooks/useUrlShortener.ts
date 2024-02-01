@@ -47,9 +47,9 @@ const useUrlShortener = () => {
     }, 3000);
   };
 
-  const getUrl = (payload?: Record<string, unknown>) => {
-    return useFetch(API_ENDPOINTS.URL.SHORTEN, {
-      params: payload,
+  const getUrl = (slug: string) => {
+    return useFetch(`${API_ENDPOINTS.URL.SHORTEN}/${slug}`, {
+      excludeInterceptor: [404],
     }) as SWRResponse;
   };
 
