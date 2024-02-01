@@ -16,7 +16,7 @@ const ErrorPage = ({ error }: { error: Error }) => {
   return (
     <section className="text-center flex gap-8 flex-col">
       <Image src={'/error.svg'} width={250} height={250} alt="warning" className="m-auto" />
-      <h1 className="text-2xl text-center text-white font-bold mb-4">Upss! we think you're lost, <br /> please turn back!</h1>
+      <h1 className="text-2xl text-center text-white font-bold mb-4">Upss! we think you&apos;re lost, <br /> please turn back!</h1>
       <Footer />
     </section>
   );
