@@ -8,7 +8,7 @@ import { UrlType } from "@/types/utils/url_type";
 import Image from "next/image";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useRef } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, Resolver, useForm } from "react-hook-form";
 
 interface TypeFormShortener {
   onSubmit: (data: UrlType) => void
@@ -20,13 +20,13 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 const FormShortener = ({ onSubmit: onSubmitParent, url, setUrl }: TypeFormShortener) => {
   const resolver = useYupValidationResolver(ShortenerFormSchema)
-  const closeRef = useRef(null)
+  const closeRef = useRef<HTMLButtonElement | null>(null)
   const { copyUrl, copiedText, isUrlHasSaved, urlStore } = useUrlShortener()
-  const methods = useForm({ resolver });
+  const methods = useForm({ resolver: resolver as Resolver<any, any> });
 
   const onSubmit = (data: UrlType) => {
     if (isUrlHasSaved(data.original_url) && typeof document.getElementById('submit-dialog')?.getAttribute('open') === 'object') {
-      return document.getElementById('submit-dialog')!.showModal()
+      return (document.getElementById('submit-dialog') as HTMLDialogElement | null)?.showModal()
     }
     closeRef.current?.click()
     return onSubmitParent(data)
@@ -38,7 +38,7 @@ const FormShortener = ({ onSubmit: onSubmitParent, url, setUrl }: TypeFormShorte
   }
 
   const openHistoryUrl = () => {
-    return document.getElementById('link-history')!.showModal()
+    return (document.getElementById('submit-dialog') as HTMLDialogElement | null)?.showModal()
   }
 
   return (

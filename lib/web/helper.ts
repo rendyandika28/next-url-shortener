@@ -66,7 +66,9 @@ export const parseRequestBody = async (req: Request): Promise<any> => {
       const formData = await req.formData();
       let form: Record<string, string | File> = {};
 
-      for (const [key, value] of formData.entries()) {
+      const entriesArray = Array.from(formData.entries());
+
+      for (const [key, value] of entriesArray) {
         form[key] = value instanceof File ? value : value.toString();
       }
 

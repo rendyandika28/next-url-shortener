@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { AnyObjectSchema } from "yup";
+import { AnyObjectSchema, ValidationError } from "yup";
 
 export const useYupValidationResolver = (validationSchema: AnyObjectSchema) =>
   useCallback(
@@ -14,19 +14,21 @@ export const useYupValidationResolver = (validationSchema: AnyObjectSchema) =>
           errors: {},
         };
       } catch (errors) {
-        return {
-          values: {},
-          errors: errors.inner.reduce(
-            (allErrors, currentError) => ({
-              ...allErrors,
-              [currentError.path]: {
-                type: currentError.type ?? "validation",
-                message: currentError.message,
-              },
-            }),
-            {}
-          ),
-        };
+        if (errors instanceof ValidationError) {
+          return {
+            values: {},
+            errors: errors.inner.reduce(
+              (allErrors, currentError) => ({
+                ...allErrors,
+                [currentError.path as string]: {
+                  type: currentError.type ?? "validation",
+                  message: currentError.message,
+                },
+              }),
+              {}
+            ),
+          };
+        }
       }
     },
     [validationSchema]

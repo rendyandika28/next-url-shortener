@@ -59,7 +59,9 @@ export function useFetch(url: string, opts?: FetchOptsType) {
         }
       }
 
-      toaster.show(error?.response?.data?.message as string, { type: "error" });
+      const errorMessage = (error?.response?.data as { message?: string })
+        ?.message;
+      toaster.show(errorMessage as string, { type: "error" });
     },
     revalidateOnFocus: false,
   };
